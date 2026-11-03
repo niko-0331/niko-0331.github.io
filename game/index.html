@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#050507">
+<title>沈黙の五限目</title>
+<meta name="description" content="診断で決まる分岐ホラー。見えない苦しみと、「聞くこと」の物語。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&family=Yuji+Syuku&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-screen="s-title">
+<div id="app">
+  <canvas id="cv"></canvas>
+  <canvas id="cv3"></canvas>
+  <div id="sprites"></div>
+  <div id="whispers"></div>
+  <canvas id="grain"></canvas>
+  <div id="vig"></div>
+  <div id="redp"></div>
+  <div id="blackout"></div>
+
+  <!-- タイトル -->
+  <section id="s-title" class="screen on">
+    <div class="title-wrap">
+      <p class="eyebrow">診断で決まる分岐ホラー</p>
+      <h1 class="glitch" data-t="沈黙の五限目">沈黙の五限目</h1>
+      <p class="sub">— 見えない苦しみと、「聞くこと」の物語 —</p>
+      <div class="menu-col">
+        <button class="btn primary" id="btn-start">はじめる</button>
+        <button class="btn" id="btn-continue" style="display:none">つづきから</button>
+        <button class="btn ghost" id="btn-endings">エンディング一覧</button>
+        <button class="btn ghost" id="btn-about">IBSについて・相談先</button>
+        <div class="row2"><button class="btn ghost sm" id="btn-settings">設定</button><button class="btn ghost sm" id="btn-voice">ボイス確認</button></div>
+      </div>
+      <p class="credit">ヘッドホン推奨 ／ フィクションです</p>
+    </div>
+  </section>
+
+  <!-- 注意 -->
+  <section id="s-warn" class="screen">
+    <div class="card warn">
+      <h2>はじめる前に</h2>
+      <ul>
+        <li>このゲームは<b>フィクション</b>です。診断は心理検査ではなく、物語を分岐させるための仕掛けです。</li>
+        <li><b>大きな音・光の点滅・不安をあおる演出</b>があります。</li>
+        <li><b>ヘッドホン</b>での視聴をおすすめします。</li>
+        <li>気分が悪くなったら、いつでもやめてください。</li>
+      </ul>
+      <label class="row chk"><input type="checkbox" id="opt-mild"> マイルドモード（点滅・揺れ・大音量を弱める）</label>
+      <label class="row">音量 <input type="range" id="opt-vol" min="0" max="1" step=".05" value=".8"></label>
+      <div class="btns"><button class="btn primary" id="btn-agree">了解して、診断をはじめる</button><button class="btn ghost" id="btn-warn-back">戻る</button></div>
+    </div>
+  </section>
+
+  <!-- 診断 -->
+  <section id="s-quiz" class="screen">
+    <div class="card quiz" id="quiz-card">
+      <p id="quiz-prog" class="prog"></p>
+      <div id="quiz-bar" class="bar"><i></i></div>
+      <h2 id="quiz-q"></h2>
+      <p id="quiz-sub" class="qsub"></p>
+      <div id="quiz-opts"></div>
+    </div>
+  </section>
+
+  <!-- ゲーム本編 -->
+  <section id="s-game" class="screen">
+    <div id="hud"><button id="btn-log" aria-label="会話ログ">ログ</button><button id="btn-menu" aria-label="メニュー">☰</button></div>
+    <div id="timer"><i></i></div>
+    <div id="choices"></div>
+    <div id="textbox">
+      <img id="portrait" alt="">
+      <div class="tb-in"><div id="name"></div><p id="msg"></p></div>
+      <span id="ind">▼</span>
+    </div>
+    <div id="breath">
+      <div class="b-wrap"><div id="bring"></div><div id="bcircle"></div><p id="btext"></p><p id="bdots">○○○</p></div>
+      <button id="bskip" class="btn ghost sm">スキップ</button>
+    </div>
+  </section>
+
+  <!-- 結末 -->
+  <section id="s-end" class="screen"></section>
+
+  <div id="scare"><img id="scareImg" alt=""></div>
+  <div id="flash"></div>
+  <div id="panel"><div id="panel-body"></div></div>
+</div>
+
+<template id="tpl-about">
+  <h2>IBS（過敏性腸症候群）について</h2>
+  <p class="note">この物語の「汐音」が抱えている状態です。以下は一般的な説明で、診断ではありません。</p>
+  <h3>どんな状態？</h3>
+  <p>検査をしても腸にはっきりした異常が見つからないのに、腹痛やお腹の不調（下痢・便秘・ガスなど）が続く状態です。決して珍しい状態ではなく、日本の成人を対象にした2023年の国際調査では、約15%という報告もあります（調査方法によって数字は変わります）。</p>
+  <p>緊張や不安、ストレスで悪化しやすく、「また鳴ったらどうしよう」という不安がさらに症状を強めてしまうことがあります。静かな教室や、すぐにトイレへ行けない場所が、とくにつらくなりがちです。</p>
+  <p>見た目では分かりません。「気のせい」「サボり」「わがまま」ではありません。</p>
+  <h3>つらいときは</h3>
+  <ul>
+    <li>ひとりで抱えず、<b>保護者・担任の先生・保健室（養護教諭）・スクールカウンセラー</b>に相談してみてください。</li>
+    <li>医療機関（内科・消化器内科など）で相談すると、食事・生活リズム・お薬・ストレスとのつきあい方など、楽になる方法が見つかることがあります。</li>
+    <li>血便、発熱、体重が減る、夜中に強い痛みで目が覚める、などがあるときは、早めに受診してください。</li>
+    <li>先生に伝えるときは「どうしてほしいか」も一緒に伝えてOKです（席を出口の近くに／声をかけずにトイレへ行ける、など）。</li>
+  </ul>
+  <h3>身近な人にできること</h3>
+  <ul>
+    <li>知識を教える前に、まず<b>「どうしてほしい？」</b>と聞く。</li>
+    <li>みんなの前で体調を聞かない。気づいても、気づかないふりが助けになることがある。</li>
+    <li>先生や他の人に伝えるときは、<b>本人の同意</b>をとる。</li>
+    <li>「また？」「サボり？」と決めつけず、事情を知らないことを自覚する。</li>
+  </ul>
+  <p class="note">※このゲームの診断は、仕組みを説明するための試作で、実際の心理尺度ではありません。</p>
+</template>
+
+<script src="story.js"></script>
+<script src="voicemap.js"></script>
+<script src="scene3d.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
